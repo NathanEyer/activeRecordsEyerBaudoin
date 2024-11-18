@@ -9,13 +9,17 @@ public class DBConnection {
     private String dbName = "active_records";
     private Connection connection;
     private static DBConnection instance;
+    private String username = "root";
+    private String password = "corroy";
 
-    private DBConnection(String username, String password) {
+    private DBConnection() {
+        createConnection();
+    }
+
+    private void createConnection() {
         try {
-            // chargement du driver jdbc
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            // creation de la connection
             Properties connectionProps = new Properties();
             connectionProps.put("user", username);
             connectionProps.put("password", password);
@@ -26,20 +30,28 @@ public class DBConnection {
         }
     }
 
-    public static synchronized DBConnection getInstance(String username, String password) {
+    public static synchronized DBConnection getInstance() {
         if (instance == null) {
-            instance = new DBConnection(username, password);
+            instance = new DBConnection();
         }
         return instance;
     }
 
-    // Méthode pour récupérer la connexion
     public Connection getConnection() {
-        
         return connection;
     }
 
     public void setNomDB(String nomDB) {
-        this.dbName = nomDB;
+        if (this.dbName == null || !this.dbName.equals(nomDB)) {
+            this.dbName = nomDB;
+            try {
+                if (connection != null) {
+                    connection.close(); // Fermer l'ancienne connexion
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            createConnection();
+        }
     }
 }

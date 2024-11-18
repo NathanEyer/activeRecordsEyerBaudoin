@@ -6,7 +6,7 @@ import java.sql.Statement;
 
 public class PrincipaleJDBC {
     public static void main(String[] args) {
-        Connection connect = DBConnection.getInstance("root", "corroy").getConnection();
+        Connection connect = DBConnection.getInstance().getConnection();
 
         try {
             // creation de la table Personne
