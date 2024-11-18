@@ -4,15 +4,13 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class DBConnection {
-    private String username = "root";
-    private String password = "corroy";
     private String serverName = "localhost";
     private String portNumber = "3306";
     private String dbName = "active_records";
     private Connection connection;
     private static DBConnection instance;
 
-    private DBConnection() {
+    private DBConnection(String username, String password) {
         try {
             // chargement du driver jdbc
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -23,22 +21,25 @@ public class DBConnection {
             connectionProps.put("password", password);
             String urlDB = "jdbc:mysql://" + serverName + ":" + portNumber + "/" + dbName;
             this.connection = DriverManager.getConnection(urlDB, connectionProps);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (SQLException e) {
+        } catch (ClassNotFoundException | SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static synchronized DBConnection getInstance() {
+    public static synchronized DBConnection getInstance(String username, String password) {
         if (instance == null) {
-            instance = new DBConnection();
+            instance = new DBConnection(username, password);
         }
         return instance;
     }
 
     // Méthode pour récupérer la connexion
     public Connection getConnection() {
+        
         return connection;
+    }
+
+    public void setNomDB(String nomDB) {
+        this.dbName = nomDB;
     }
 }
