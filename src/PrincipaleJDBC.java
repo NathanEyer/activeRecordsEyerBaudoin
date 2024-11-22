@@ -4,6 +4,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
+/**
+ * Classe principale
+ */
 public class PrincipaleJDBC {
     public static void main(String[] args) {
         Connection connect = DBConnection.getInstance().getConnection();
