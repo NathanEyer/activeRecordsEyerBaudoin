@@ -19,4 +19,31 @@ public class Film {
         this.id = id ;
         this.id_real = id_real ;
     }
+
+    public void setTitre(String titre){
+        this.titre = titre ;
+    }
+
+    public String getTitre(){
+        return this.titre ;
+    }
+
+    public int getId(){
+        return this.id ;
+    }
+
+    public int getIdReal(){
+        return this.id_real ;
+    }
+
+
+    // TODO
+
+    public static Film findById(int id){
+        return ;
+    }
+
+    public Personne getRealisateur(){
+        return ;
+    }
 }
