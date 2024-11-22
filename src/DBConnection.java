@@ -6,8 +6,8 @@ import java.util.Properties;
 public class DBConnection {
     private String serverName = "localhost";
     private String portNumber = "3306";
-    private String dbName = "active_records";
-    private Connection connection;
+    private static String dbName = "active_records";
+    private static Connection connection;
     private static DBConnection instance;
     private String username = "root";
     private String password = "corroy";
@@ -41,17 +41,24 @@ public class DBConnection {
         return connection;
     }
 
-    public void setNomDB(String nomDB) {
-        if (this.dbName == null || !this.dbName.equals(nomDB)) {
-            this.dbName = nomDB;
+    public static synchronized void setNomDB(String nomDB) {
+        // Vérifie si le nom de la base de données a changé
+        if (dbName == null || !dbName.equals(nomDB)) {
+            dbName = nomDB;
+
             try {
+                // Ferme l'ancienne connexion si elle existe
                 if (connection != null) {
-                    connection.close(); // Fermer l'ancienne connexion
+                    connection.close();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
             }
-            createConnection();
+
+            // Recrée la connexion avec la nouvelle base de données
+            if (instance != null) {
+                instance.createConnection();
+            }
         }
     }
 }
