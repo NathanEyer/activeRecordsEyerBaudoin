@@ -71,6 +71,34 @@ public class Personne {
         return tabPersonnes;
     }
 
+    public static void createTable(Connection connection){
+        // Crée la table Personne
+        String createTableSQL = """
+                CREATE TABLE IF NOT EXISTS Personne (
+                    id INT AUTO_INCREMENT PRIMARY KEY,
+                    nom VARCHAR(50) NOT NULL,
+                    prenom VARCHAR(50) NOT NULL
+                );
+                """;
+        try {
+            PreparedStatement createTable = connection.prepareStatement(createTableSQL);
+            createTable.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void dropTable(Connection connection){
+        String dropTableSQL = "DROP TABLE IF EXISTS Personne;";
+        PreparedStatement dropTable = null;
+        try {
+            dropTable = connection.prepareStatement(dropTableSQL);
+            dropTable.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public void setId(int id) {
         this.id = id;
     }

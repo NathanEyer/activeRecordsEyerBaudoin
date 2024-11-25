@@ -38,9 +38,15 @@ public class DBConnection {
     }
 
     public Connection getConnection() {
+        try {
+            if (connection == null || connection.isClosed()) {
+                createConnection();
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la vérification de la connexion", e);
+        }
         return connection;
     }
-
     public static synchronized void setNomDB(String nomDB) {
         // Vérifie si le nom de la base de données a changé
         if (dbName == null || !dbName.equals(nomDB)) {
