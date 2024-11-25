@@ -1,3 +1,5 @@
+package activeRecord;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -71,16 +73,18 @@ public class Personne {
         return tabPersonnes;
     }
 
-    public static void createTable(Connection connection){
-        // Crée la table Personne
-        String createTableSQL = """
-                CREATE TABLE IF NOT EXISTS Personne (
-                    id INT AUTO_INCREMENT PRIMARY KEY,
-                    nom VARCHAR(50) NOT NULL,
-                    prenom VARCHAR(50) NOT NULL
-                );
-                """;
+    public static void createTable(){
         try {
+            DBConnection.setNomDB("test_active_records");
+            Connection connection = DBConnection.getInstance().getConnection();
+            String createTableSQL = """
+                CREATE TABLE Personne (
+                  id int(11) NOT NULL AUTO_INCREMENT,
+                  nom varchar(40) NOT NULL,
+                  prenom varchar(40) NOT NULL,
+                    PRIMARY KEY (id)
+                ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+                """;
             PreparedStatement createTable = connection.prepareStatement(createTableSQL);
             createTable.execute();
         } catch (SQLException e) {
@@ -88,12 +92,66 @@ public class Personne {
         }
     }
 
-    public static void dropTable(Connection connection){
-        String dropTableSQL = "DROP TABLE IF EXISTS Personne;";
-        PreparedStatement dropTable = null;
+    public static void deleteTable(){
         try {
-            dropTable = connection.prepareStatement(dropTableSQL);
+            Connection connection = DBConnection.getInstance().getConnection();
+            String dropTableSQL = "DROP TABLE IF EXISTS Personne;";
+            PreparedStatement dropTable = connection.prepareStatement(dropTableSQL);
             dropTable.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void save(){
+        if(this.id == -1) saveNew();
+        else update();
+    }
+
+    private void saveNew(){
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+
+            String sql = "INSERT INTO Personne(nom, prenom) VALUES (?,?)";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, this.nom);
+            statement.setString(2, this.prenom);
+            statement.execute();
+
+            sql = "Select * from Personne where nom = ?";
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, this.nom);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()){
+                this.id = Integer.parseInt(rs.getString("id"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void update(){
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            String sql = "UPDATE Personne set nom = ?, prenom = ? where id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setString(1, this.nom);
+            statement.setString(2, this.prenom);
+            statement.setInt(3, this.id);
+            statement.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void delete(){
+        try {
+            Connection connection = DBConnection.getInstance().getConnection();
+            String sql = "Delete from Personne where id = ?";
+            PreparedStatement statement = connection.prepareStatement(sql);
+            statement.setInt(1, id);
+            statement.execute();
+            this.id = -1;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -109,5 +167,17 @@ public class Personne {
 
     public String getPrenom() {
         return prenom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public void setPrenom(String prenom) {
+        this.prenom = prenom;
+    }
+
+    public int getId() {
+        return id;
     }
 }

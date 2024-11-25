@@ -1,4 +1,4 @@
-import java.sql.*;
+import activeRecord.Personne;
 
 public class Film {
 
