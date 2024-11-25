@@ -4,15 +4,26 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class Personne {
+    //Attributs
     private String nom, prenom;
     private int id;
 
+    /**
+     * Construit une Personne avec un nom et un prénom
+     * id initialisé à -1 tant qu'il n'est pas add dans la base
+     * @param nom de la Personne
+     * @param prenom de la Personne
+     */
     public Personne(String nom, String prenom) {
         this.nom = nom;
         this.prenom = prenom;
         this.id = -1;
     }
 
+    /**
+     * Retourne toutes les personnes de la base
+     * @return Liste
+     */
     public static ArrayList<Personne> findAll(){
         try {
             Connection connect = DBConnection.getInstance().getConnection();
@@ -26,6 +37,11 @@ public class Personne {
         }
     }
 
+    /**
+     * Retourne une personne en fonction de l'id
+     * @param id de la personne recherché
+     * @return Personne
+     */
     public static Personne findById(int id){
         try {
             Connection connect = DBConnection.getInstance().getConnection();
@@ -44,6 +60,11 @@ public class Personne {
         }
     }
 
+    /**
+     * Retourne la ou les personne à partir d'un nom
+     * @param name de la personne recherchée
+     * @return Liste
+     */
     public static ArrayList<Personne> findByName(String name){
         try {
             Connection connect = DBConnection.getInstance().getConnection();
@@ -58,10 +79,15 @@ public class Personne {
         }
     }
 
+    /**
+     * Crée les listes selon le statement
+     * @param statement sur lequel travailler
+     * @return Liste
+     * @throws SQLException erreurs sql
+     */
     private static ArrayList<Personne> getArrayPersonne(PreparedStatement statement) throws SQLException {
         ResultSet rs = statement.getResultSet();
         ArrayList<Personne> tabPersonnes = new ArrayList<>();
-        int i = 0;
         while (rs.next()) {
             String nom = rs.getString("nom");
             String prenom = rs.getString("prenom");
@@ -73,6 +99,9 @@ public class Personne {
         return tabPersonnes;
     }
 
+    /**
+     * Crée la table de test
+     */
     public static void createTable(){
         try {
             DBConnection.setNomDB("test_active_records");
@@ -92,6 +121,9 @@ public class Personne {
         }
     }
 
+    /**
+     * Supprime la table de test
+     */
     public static void deleteTable(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
@@ -103,11 +135,17 @@ public class Personne {
         }
     }
 
+    /**
+     * Mets à jour la table
+     */
     public void save(){
         if(this.id == -1) saveNew();
         else update();
     }
 
+    /**
+     * Insère une nouvelle personne dans la table
+     */
     private void saveNew(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
@@ -130,6 +168,9 @@ public class Personne {
         }
     }
 
+    /**
+     * Mets à jour une personne dans la table
+     */
     private void update(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
@@ -144,6 +185,9 @@ public class Personne {
         }
     }
 
+    /**
+     * Supprime la personne courante de la table
+     */
     public void delete(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
@@ -157,26 +201,44 @@ public class Personne {
         }
     }
 
+    /**
+     * @param id de la personne
+     */
     public void setId(int id) {
         this.id = id;
     }
 
+    /**
+     * @return nom de la personne
+     */
     public String getNom() {
         return nom;
     }
 
+    /**
+     * @return prénom de la personne
+     */
     public String getPrenom() {
         return prenom;
     }
 
+    /**
+     * @param nom de la personne
+     */
     public void setNom(String nom) {
         this.nom = nom;
     }
 
+    /**
+     * @param prenom de la personne
+     */
     public void setPrenom(String prenom) {
         this.prenom = prenom;
     }
 
+    /**
+     * @return id de la personne
+     */
     public int getId() {
         return id;
     }
