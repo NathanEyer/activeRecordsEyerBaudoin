@@ -32,6 +32,10 @@ public class Film {
         return this.id ;
     }
 
+    public void setId(int id){
+        this.id = id ;
+    }
+
     public int getIdReal(){
         return this.id_real ;
     }
@@ -40,10 +44,38 @@ public class Film {
     // TODO
 
     public static Film findById(int id){
-        return ;
+        try {
+            Connection connect = DBConnection.getInstance().getConnection();
+            String sql = "Select * from Film where id = ?";
+            PreparedStatement statement = connect.prepareStatement(sql);
+            statement.setInt(1, id);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()){
+                Film f = new Film(rs.getString("titre"), rs.getString("id"), rs.getString("id_real"));
+                f.setId(id);
+                return f;
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public Personne getRealisateur(){
-        return ;
+        try {
+            Connection connect = DBConnection.getInstance().getConnection();
+            String sql = "Select * from Personne where id = ?";
+            PreparedStatement statement = connect.prepareStatement(sql);
+            statement.setInt(1, this.id_real);
+            ResultSet rs = statement.executeQuery();
+            if(rs.next()){
+                Personne p = new Personne(rs.getString("nom"), rs.getString("prenom"));
+                p.setId(this.id_real);
+                return p;
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
