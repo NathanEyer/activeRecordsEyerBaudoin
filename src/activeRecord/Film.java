@@ -9,10 +9,10 @@ public class Film {
     private String titre ;
     private int id_rea ;
 
-    public Film(String titre, int id_rea) {
+    public Film(String titre, Personne rea) {
         this.id = -1 ;
         this.titre = titre;
-        this.id_rea = id_rea;
+        this.id_rea = rea.getId();
     }
 
     //   GETTER AND SETTER 
