@@ -7,12 +7,12 @@ public class Film {
 
     private int id;
     private String titre ;
-    private int id_rea ;
+    private Personne realisateur ;
 
     public Film(String titre, Personne rea) {
         this.id = -1 ;
         this.titre = titre;
-        this.id_rea = rea.getId();
+        this.realisateur = rea;
     }
 
     //   GETTER AND SETTER 
@@ -33,15 +33,6 @@ public class Film {
         this.titre = titre;
     }
 
-    public String getIdRea() {
-        return this.id_rea;
-    }
-
-    public void setIdRea(String id_rea) {
-        this.id_rea = id_rea;
-    }
-
-
     // Methode active record
 
     public static ArrayList<Film> findAll(){
@@ -58,17 +49,17 @@ public class Film {
     }
 
 
-    public static Personne getRealisateur(){
+    public Personne getRealisateur(){
         try {
             Connection connect = DBConnection.getInstance().getConnection();
             String sql = "Select * from Personne where id = ?";
             PreparedStatement statement = connect.prepareStatement(sql);
-            statement.setInt(1, id_rea);
+            statement.setInt(1, realisateur.getId());
             ResultSet rs = statement.executeQuery();
 
             if(rs.next()){
                 Personne p = new Personne(rs.getString("nom"), rs.getString("prenom"));
-                p.setId(id_rea);
+                p.setId(realisateur.getId());
                 return p;
             }
             return null;
@@ -85,7 +76,8 @@ public class Film {
             statement.setInt(1, id);
             ResultSet rs = statement.executeQuery();
             if(rs.next()){
-                Film f = new Film(rs.getString("titre"), rs.getInt("id_rea"));
+                Personne p = Personne.findById(rs.getInt("id_rea"));
+                Film f = new Film(rs.getString("titre"), p);
                 f.setId(id);
                 return f;
             }
@@ -106,26 +98,26 @@ public class Film {
             statement.setString(1, name);
             statement.executeQuery();
 
-            return getArrayPersonne(statement);
+            return getArrayFilm(statement);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static ArrayList<Film> getArrayPersonne(PreparedStatement statement) throws SQLException {
+    private static ArrayList<Film> getArrayFilm(PreparedStatement statement) throws SQLException {
         ResultSet rs = statement.getResultSet();
-        ArrayList<Film> tabPersonnes = new ArrayList<>();
+        ArrayList<Film> tabFilms = new ArrayList<>();
         int i = 0;
         while (rs.next()) {
             int id = rs.getInt("id");
-            String prenom = rs.getString("titre");
-            int id_rea = rs.getInt("id_rea");
+            String titre = rs.getString("titre");
 
-            Film p = new Film(titre, id_rea);
-            p.setId(id);
-            tabPersonnes.add(p);
+            Personne p = Personne.findById(rs.getInt("id_rea"));
+            Film f = new Film(titre, p);
+            f.setId(id);
+            tabFilms.add(f);
         }
-        return tabPersonnes;
+        return tabFilms;
     }
 
     public static void createTable(){
@@ -170,7 +162,7 @@ public class Film {
             String sql = "INSERT INTO Film(titre, id_rea) VALUES (?,?)";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, this.titre);
-            statement.setString(2, this.id_rea);
+            statement.setInt(2, this.realisateur.getId());
             statement.execute();
 
             sql = "Select * from Film where nom = ?";
