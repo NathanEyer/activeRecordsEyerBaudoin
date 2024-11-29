@@ -4,37 +4,26 @@ import java.sql.*;
 import java.util.ArrayList;
 
 public class Film {
-
+    //Attributs
     private int id;
     private String titre ;
     private Personne realisateur ;
 
+    /**
+     * Construit un film
+     * @param titre du film
+     * @param rea realisateur du film
+     */
     public Film(String titre, Personne rea) {
         this.id = -1 ;
         this.titre = titre;
         this.realisateur = rea;
     }
 
-    //   GETTER AND SETTER 
-
-    public int getId() {
-        return this.id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getTitre() {
-        return this.titre;
-    }
-
-    public void setTitre(String titre) {
-        this.titre = titre;
-    }
-
-    // Methode active record
-
+    /**
+     * Renvoie tous les films de la base
+     * @return liste de films
+     */
     public static ArrayList<Film> findAll(){
         try {
             Connection connect = DBConnection.getInstance().getConnection();
@@ -48,7 +37,10 @@ public class Film {
         }
     }
 
-
+    /**
+     * Retourne le réalisateur du film courant
+     * @return réalisateur
+     */
     public Personne getRealisateur(){
         try {
             Connection connect = DBConnection.getInstance().getConnection();
@@ -68,6 +60,11 @@ public class Film {
         }
     }
 
+    /**
+     * Retourne un film en fonction d'un id
+     * @param id donné
+     * @return Film correspondant
+     */
     public static Film findById(int id){
         try {
             Connection connect = DBConnection.getInstance().getConnection();
@@ -88,14 +85,16 @@ public class Film {
     }
 
     /**
-     * On suppose que l'on peut avoir plusieurs film du meme nom
+     * Renvoie le film en fonction du titre
+     * @param titre
+     * @return liste de films
      */
-    public static ArrayList<Film> findByName(String name){
+    public static ArrayList<Film> findByTitle(String titre){
         try {
             Connection connect = DBConnection.getInstance().getConnection();
             String sql = "Select * from Film where titre = ?";
             PreparedStatement statement = connect.prepareStatement(sql);
-            statement.setString(1, name);
+            statement.setString(1, titre);
             statement.executeQuery();
 
             return getArrayFilm(statement);
@@ -104,6 +103,12 @@ public class Film {
         }
     }
 
+    /**
+     * Retourne un tableau de films
+     * @param statement donné
+     * @return liste de films
+     * @throws SQLException exception
+     */
     private static ArrayList<Film> getArrayFilm(PreparedStatement statement) throws SQLException {
         ResultSet rs = statement.getResultSet();
         ArrayList<Film> tabFilms = new ArrayList<>();
@@ -120,6 +125,9 @@ public class Film {
         return tabFilms;
     }
 
+    /**
+     * Création de la table de test
+     */
     public static void createTable(){
         try {
             DBConnection.setNomDB("test_active_records");
@@ -139,6 +147,9 @@ public class Film {
         }
     }
 
+    /**
+     * Suppression de la table de test
+     */
     public static void deleteTable(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
@@ -150,11 +161,13 @@ public class Film {
         }
     }
 
+    /**
+     * Enregistre un nouveau film
+     */
     public void save(){
         if(this.id == -1) saveNew();
         else update();
     }
-
     private void saveNew(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
@@ -177,6 +190,9 @@ public class Film {
         }
     }
 
+    /**
+     * Mets à jour la table
+     */
     private void update(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
@@ -191,6 +207,9 @@ public class Film {
         }
     }
 
+    /**
+     * Supprime une table
+     */
     public void delete(){
         try {
             Connection connection = DBConnection.getInstance().getConnection();
@@ -204,6 +223,10 @@ public class Film {
         }
     }
 
+    /**
+     * Affiche proprement un film
+     * @return chaîne de film
+     */
     @Override
     public String toString() {
         return "Film{" +
@@ -211,5 +234,22 @@ public class Film {
                 ", titre='" + titre + '\'' +
                 ", realisateur=" + realisateur +
                 '}';
+    }
+
+    //   GETTER AND SETTER
+    public int getId() {
+        return this.id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitre() {
+        return this.titre;
+    }
+
+    public void setTitre(String titre) {
+        this.titre = titre;
     }
 }

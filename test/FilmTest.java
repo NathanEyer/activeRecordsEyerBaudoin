@@ -1,5 +1,6 @@
 import activeRecord.DBConnection;
 import activeRecord.Film;
+import activeRecord.Personne;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,7 @@ class FilmTest {
         dropTable.execute();
         PreparedStatement createTable = connection.prepareStatement(createTableSQL);
         createTable.execute();
+        Personne.createTable();
 
         // Insère les données de test
         String insertDataSQL = """
@@ -67,8 +69,8 @@ class FilmTest {
     }
 
     @Test
-    void findByName() {
-        ArrayList<Film> film = Film.findByName("Blade Runner");
+    void findByTitle() {
+        ArrayList<Film> film = Film.findByTitle("Blade Runner");
         assertNotNull(film);
         assertEquals(1, film.size());
         assertEquals("Blade Runner", film.get(0).getTitre());

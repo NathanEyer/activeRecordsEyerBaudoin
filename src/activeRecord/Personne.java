@@ -244,6 +244,10 @@ public class Personne {
         return id;
     }
 
+    /**
+     * Affiche proprement une personne
+     * @return chaine de personne
+     */
     @Override
     public String toString() {
         return "Personne{" +
