@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class DBConnection {
+    //Attributs de connexions
     private String serverName = "localhost";
     private String portNumber = "3306";
     private static String dbName = "active_records";
@@ -14,10 +15,12 @@ public class DBConnection {
     private String username = "root";
     private String password = "corroy";
 
+    /**
+     * Création de la connexion
+     */
     private DBConnection() {
         createConnection();
     }
-
     private void createConnection() {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -32,6 +35,10 @@ public class DBConnection {
         }
     }
 
+    /**
+     * Récupération de l'instance
+     * @return instance créé
+     */
     public static synchronized DBConnection getInstance() {
         if (instance == null) {
             instance = new DBConnection();
@@ -39,6 +46,10 @@ public class DBConnection {
         return instance;
     }
 
+    /**
+     * récupération de la connexion
+     * @return Connection
+     */
     public Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
@@ -49,6 +60,11 @@ public class DBConnection {
         }
         return connection;
     }
+
+    /**
+     * Change la base de données utilisées
+     * @param nomDB bd
+     */
     public static synchronized void setNomDB(String nomDB) {
         // Vérifie si le nom de la base de données a changé
         if (dbName == null || !dbName.equals(nomDB)) {
