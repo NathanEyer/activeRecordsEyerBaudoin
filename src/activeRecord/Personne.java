@@ -31,7 +31,7 @@ public class Personne {
             PreparedStatement statement = connect.prepareStatement(sql);
             statement.execute();
 
-            return getArrayPersonne(statement);
+            return getArrayPersonne(statement.getResultSet());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -53,8 +53,9 @@ public class Personne {
                 Personne p = new Personne(rs.getString("nom"), rs.getString("prenom"));
                 p.setId(id);
                 return p;
+            }else{
+                return null;
             }
-            return null;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -71,9 +72,9 @@ public class Personne {
             String sql = "Select * from Personne where nom = ?";
             PreparedStatement statement = connect.prepareStatement(sql);
             statement.setString(1, name);
-            statement.executeQuery();
+            ResultSet rs = statement.executeQuery();
 
-            return getArrayPersonne(statement);
+            return getArrayPersonne(rs);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -81,12 +82,11 @@ public class Personne {
 
     /**
      * Crée les listes selon le statement
-     * @param statement sur lequel travailler
+     * @param rs sur lequel travailler
      * @return Liste
      * @throws SQLException erreurs sql
      */
-    private static ArrayList<Personne> getArrayPersonne(PreparedStatement statement) throws SQLException {
-        ResultSet rs = statement.getResultSet();
+    private static ArrayList<Personne> getArrayPersonne(ResultSet rs) throws SQLException {
         ArrayList<Personne> tabPersonnes = new ArrayList<>();
         while (rs.next()) {
             String nom = rs.getString("nom");
@@ -107,7 +107,7 @@ public class Personne {
             DBConnection.setNomDB("test_active_records");
             Connection connection = DBConnection.getInstance().getConnection();
             String createTableSQL = """
-                CREATE TABLE Personne (
+                CREATE TABLE if not exists Personne (
                   id int(11) NOT NULL AUTO_INCREMENT,
                   nom varchar(40) NOT NULL,
                   prenom varchar(40) NOT NULL,
@@ -126,6 +126,7 @@ public class Personne {
      */
     public static void deleteTable(){
         try {
+            DBConnection.setNomDB("test_active_records");
             Connection connection = DBConnection.getInstance().getConnection();
             String dropTableSQL = "DROP TABLE IF EXISTS Personne;";
             PreparedStatement dropTable = connection.prepareStatement(dropTableSQL);
@@ -151,17 +152,17 @@ public class Personne {
             Connection connection = DBConnection.getInstance().getConnection();
 
             String sql = "INSERT INTO Personne(nom, prenom) VALUES (?,?)";
-            PreparedStatement statement = connection.prepareStatement(sql);
+            PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, this.nom);
             statement.setString(2, this.prenom);
-            statement.execute();
+            statement.executeUpdate();
 
-            sql = "Select * from Personne where nom = ?";
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, this.nom);
-            ResultSet rs = statement.executeQuery();
-            if(rs.next()){
-                this.id = Integer.parseInt(rs.getString("id"));
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    this.id = generatedKeys.getInt(1); // Récupérer l'ID auto-généré
+                } else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -241,5 +242,14 @@ public class Personne {
      */
     public int getId() {
         return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Personne{" +
+                "nom='" + nom + '\'' +
+                ", prenom='" + prenom + '\'' +
+                ", id=" + id +
+                '}';
     }
 }

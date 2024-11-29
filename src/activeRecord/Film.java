@@ -125,8 +125,8 @@ public class Film {
             DBConnection.setNomDB("test_active_records");
             Connection connection = DBConnection.getInstance().getConnection();
             String createTableSQL = """
-                CREATE TABLE Film (
-                      id int(11) NOT NULL,
+                CREATE TABLE if not exists Film (
+                      id int(11) NOT NULL AUTO_INCREMENT,
                       titre varchar(40) NOT NULL,
                       id_rea int(11) NOT NULL,
                       PRIMARY KEY (id,id_rea)
@@ -202,5 +202,14 @@ public class Film {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Film{" +
+                "id=" + id +
+                ", titre='" + titre + '\'' +
+                ", realisateur=" + realisateur +
+                '}';
     }
 }

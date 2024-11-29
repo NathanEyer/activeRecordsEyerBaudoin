@@ -22,15 +22,17 @@ class FilmTest {
         connection = DBConnection.getInstance().getConnection();
 
         // Crée la table Personne
+        String dropSql = "DROP TABLE IF EXISTS Film";
         String createTableSQL = """
-                DROP TABLE IF EXISTS Film
                 CREATE TABLE Film (
-                      id int(11) NOT NULL,
-                      titre varchar(40) NOT NULL,
-                      id_rea int(11) NOT NULL,
-                      PRIMARY KEY (id,id_rea)
-                ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+                      id INT(11) NOT NULL,
+                      titre VARCHAR(40) NOT NULL,
+                      id_rea INT(11) NOT NULL,
+                      PRIMARY KEY (id, id_rea)
+                );
                 """;
+        PreparedStatement dropTable = connection.prepareStatement(dropSql);
+        dropTable.execute();
         PreparedStatement createTable = connection.prepareStatement(createTableSQL);
         createTable.execute();
 
@@ -53,23 +55,23 @@ class FilmTest {
     void findAll() {
         ArrayList<Film> films = Film.findAll();
         assertNotNull(films);
-        assertEquals(4, films.size());
-        assertEquals("Spielberg", films.get(0).getTitre());
+        assertEquals(7, films.size());
+        assertEquals("Arche perdue", films.getFirst().getTitre());
     }
 
     @Test
     void findById() {
         Film film = Film.findById(1);
         assertNotNull(film);
-        assertEquals("Spielberg", film.getTitre());
+        assertEquals("Arche perdue", film.getTitre());
     }
 
     @Test
     void findByName() {
-        ArrayList<Film> film = Film.findByName("Fincher");
+        ArrayList<Film> film = Film.findByName("Blade Runner");
         assertNotNull(film);
         assertEquals(1, film.size());
-        assertEquals("David", film.get(0).getTitre());
+        assertEquals("Blade Runner", film.get(0).getTitre());
     }
 
     @Test
