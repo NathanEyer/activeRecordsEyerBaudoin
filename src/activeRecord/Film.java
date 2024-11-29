@@ -165,9 +165,9 @@ public class Film {
             statement.setInt(2, this.realisateur.getId());
             statement.execute();
 
-            sql = "Select * from Film where nom = ?";
+            sql = "Select * from Film where titre = ?";
             statement = connection.prepareStatement(sql);
-            statement.setString(1, this.nom);
+            statement.setString(1, this.titre);
             ResultSet rs = statement.executeQuery();
             if(rs.next()){
                 this.id = rs.getInt("id");
@@ -183,7 +183,7 @@ public class Film {
             String sql = "UPDATE Film set titre = ?, id_rea = ? where id = ?";
             PreparedStatement statement = connection.prepareStatement(sql);
             statement.setString(1, this.titre);
-            statement.setString(2, this.id_rea);
+            statement.setInt(2, this.realisateur.getId());
             statement.setInt(3, this.id);
             statement.execute();
         } catch (SQLException e) {

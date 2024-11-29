@@ -1,3 +1,5 @@
+import activeRecord.DBConnection;
+import activeRecord.Film;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -49,27 +51,25 @@ class FilmTest {
 
     @Test
     void findAll() {
-        ArrayList<Film> personnes = Film.findAll();
-        assertNotNull(personnes);
-        assertEquals(4, personnes.size());
-        assertEquals("Spielberg", personnes.get(0).getNom());
-        assertEquals("Steven", personnes.get(0).getPrenom());
+        ArrayList<Film> films = Film.findAll();
+        assertNotNull(films);
+        assertEquals(4, films.size());
+        assertEquals("Spielberg", films.get(0).getTitre());
     }
 
     @Test
     void findById() {
-        Film personne = Film.findById(1);
-        assertNotNull(personne);
-        assertEquals("Spielberg", personne.getNom());
-        assertEquals("Steven", personne.getPrenom());
+        Film film = Film.findById(1);
+        assertNotNull(film);
+        assertEquals("Spielberg", film.getTitre());
     }
 
     @Test
     void findByName() {
-        ArrayList<Film> personnes = Film.findByName("Fincher");
-        assertNotNull(personnes);
-        assertEquals(1, personnes.size());
-        assertEquals("David", personnes.get(0).getPrenom());
+        ArrayList<Film> film = Film.findByName("Fincher");
+        assertNotNull(film);
+        assertEquals(1, film.size());
+        assertEquals("David", film.get(0).getTitre());
     }
 
     @Test
